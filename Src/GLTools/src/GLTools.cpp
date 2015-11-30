@@ -789,6 +789,7 @@ typedef struct
 #pragma pack(8)
 
 
+// @Removed: doesn’t seem to be used anywhere, and doesn’t compile as-is.
 ////////////////////////////////////////////////////////////////////
 // Capture the current viewport and save it as a targa file.
 // Be sure and call SwapBuffers for double buffered contexts or
@@ -796,6 +797,7 @@ typedef struct
 // Returns 0 if an error occurs, or 1 on success.
 // Does not work on the iPhone
 #ifndef OPENGL_ES
+/*
 GLint gltGrabScreenTGA(const char *szFileName)
 	{
     FILE *pFile;                // File pointer
@@ -875,6 +877,7 @@ GLint gltGrabScreenTGA(const char *szFileName)
     // Success!
     return 1;
 	}
+*/
 #endif
 
 
@@ -910,12 +913,15 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
     
     // Do byte swap for big vs little endian
 #ifdef __APPLE__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
     LITTLE_ENDIAN_WORD(&tgaHeader.colorMapStart);
     LITTLE_ENDIAN_WORD(&tgaHeader.colorMapLength);
     LITTLE_ENDIAN_WORD(&tgaHeader.xstart);
     LITTLE_ENDIAN_WORD(&tgaHeader.ystart);
     LITTLE_ENDIAN_WORD(&tgaHeader.width);
     LITTLE_ENDIAN_WORD(&tgaHeader.height);
+#pragma clang diagnostic pop
 #endif
 	
 	
@@ -961,10 +967,12 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
             *eFormat = GL_BGRA;
             *iComponents = GL_RGBA;
             break;
+#ifndef __APPLE__ // @Todo: see if removing this on Apple breaks anything (currently doesn’t compile).
         case 1:
             *eFormat = GL_LUMINANCE;
             *iComponents = GL_LUMINANCE;
             break;
+#endif
         default:        // RGB
             // If on the iPhone, TGA's are BGR, and the iPhone does not 
             // support BGR without alpha, but it does support RGB,
@@ -1057,7 +1065,7 @@ GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 		{
 		free(pBitmapInfo);
 		fclose(pFile);
-		return false;
+		return 0;
 		}
 
 	// Save the size and dimensions of the bitmap
@@ -1069,7 +1077,7 @@ GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 	if(pBitmapInfo->header.bits != 24)
 		{
 		free(pBitmapInfo);
-		return false;
+		return 0;
 		}
 
 	if(lBitSize == 0)
@@ -1144,8 +1152,7 @@ bool gltLoadShaderFile(const char *szFile, GLuint shader)
         rewind(fp);
 		
         // Read the whole file in
-        if (shaderText != NULL)
-            fread(shaderText, 1, shaderLength, fp);
+        fread(shaderText, 1, shaderLength, fp);
 		
         // Make sure it is null terminated and close the file
         shaderText[shaderLength] = '\0';
@@ -1252,7 +1259,7 @@ GLuint gltLoadShaderTripletWithAttributes(const char *szVertexShader,
     if(testVal == GL_FALSE) {
         char infoLog[1024];
         glGetProgramInfoLog(hReturn, 1024, NULL, infoLog);
-        fprintf(stderr, infoLog);
+        fprintf(stderr, "%s", infoLog);
         goto failed;
     }
 

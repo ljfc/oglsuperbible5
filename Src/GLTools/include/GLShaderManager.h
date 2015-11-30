@@ -52,8 +52,8 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 #include <OpenGLES/ES2/glext.h>
 #define OPENGL_ES
 #else
-#include <GL/glew.h>
-#include <OpenGL/gl.h>		// Apple OpenGL haders (version depends on OS X SDK version)
+#include <OpenGL/gl3.h> // Apple OpenGL header for the Core Profile.
+#include <OpenGL/gl3ext.h> // Header for Core-compatible extensions.
 #endif
 #endif
 

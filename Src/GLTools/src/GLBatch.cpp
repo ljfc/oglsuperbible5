@@ -37,14 +37,6 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 #include <GLShaderManager.h>
 
 
-//////////////////////// TEMPORARY TEMPORARY TEMPORARY - On SnowLeopard this is suppored, but GLEW doens't hook up properly
-//////////////////////// Fixed probably in 10.6.3
-#ifdef __APPLE__
-#define glGenVertexArrays glGenVertexArraysAPPLE
-#define glDeleteVertexArrays  glDeleteVertexArraysAPPLE
-#define glBindVertexArray	glBindVertexArrayAPPLE
-#endif
-
 /////////////////////// OpenGL ES support on iPhone/iPad
 #ifdef OPENGL_ES
 #define GL_WRITE_ONLY   GL_WRITE_ONLY_OES
@@ -52,8 +44,20 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 #define glUnmapBuffer   glUnmapBufferOES
 #endif
 
-GLBatch::GLBatch(void): nNumTextureUnits(0), nNumVerts(0), pVerts(NULL), pNormals(NULL), pColors(NULL), pTexCoords(NULL), uiVertexArray(0),
-	uiNormalArray(0), uiColorArray(0), vertexArrayObject(0), bBatchDone(false), nVertsBuilding(0), uiTextureCoordArray(NULL)
+GLBatch::GLBatch(void): 
+  uiVertexArray(0),
+	uiNormalArray(0),
+  uiColorArray(0),
+  uiTextureCoordArray(NULL),
+  vertexArrayObject(0),
+  nVertsBuilding(0),
+  nNumVerts(0),
+  nNumTextureUnits(0),
+  bBatchDone(false),
+  pVerts(NULL),
+  pNormals(NULL),
+  pColors(NULL),
+  pTexCoords(NULL)
 	{
 	}
 

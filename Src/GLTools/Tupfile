@@ -1,0 +1,84 @@
+# Overall configuration
+# =====================
+
+LIBRARY = GLTools
+COMPILER = clang++
+LIBTOOL = ar
+
+
+# Compiler flags
+# ==============
+
+### Language behaviour
+
+# Use c++14-equivalent language standard. TODO: Change this to c++14 rather the c++1y?
+COMPILER_FLAGS += -std=c++1y
+# On OSX, the libc++ C++ standard library is more modern, and needed for c++11 support. TODO: Improve for other platforms.
+COMPILER_FLAGS += -stdlib=libc++
+# Enable support for exception handling.
+COMPILER_FLAGS += -fexceptions
+
+### Environment settings
+
+# Add local include directory to include search path.
+COMPILER_FLAGS += -Iinclude
+# Add Homebrew include directory to include search path. TODO: Improve for other platforms.
+COMPILER_FLAGS += -I/usr/local/include
+
+### Compiler behaviour
+
+# Only run preprocess, compile, and assemble steps.
+COMPILER_FLAGS += -c
+# Enable most optimisations, without emphasising speed (-O3) or size (-Os -Oz).
+COMPILER_FLAGS += -O2
+# Enable all warnings and errors.
+COMPILER_FLAGS += -Wall
+# Set the maximum number of errors to emit before stopping (0 = no limit).
+COMPILER_FLAGS += -ferror-limit=5
+
+
+# Compiler debugging flags
+# ------------------------
+
+ifdef DEBUG
+
+# Generate source-level debug information
+COMPILER_FLAGS += -g
+# Do not optimise. Reduces comilation time and makes debugging produce the expected results.
+COMPILER_FLAGS += -O0
+# Trap on integer overflow.
+COMPILER_FLAGS += -ftrapv
+
+endif
+
+
+# Linker flags
+# ============
+
+# Add Homebrew lib directory to lib search path. TODO: Improve for other platforms.
+#LINKER_FLAGS += -L/usr/local/lib
+# Add OpenGL and related libraries.
+LINKER_FLAGS += -framework OpenGL
+
+
+# Lib tool flags
+# ==============
+
+# Replace any existing archive.
+LIBTOOL_FLAGS += -r
+# Print any informational messages to standard error.
+LIBTOOL_FLAGS += -c
+# Write an object-file index into the archive (equivalent to running `ranlib`).
+LIBTOOL_FLAGS += -s
+
+# Build rules
+# ===========
+
+# Compile
+# -------
+
+: foreach src/*.cpp |> ^o compile %f^ $(COMPILER) $(COMPILER_FLAGS) %f -o %o |> %B.o {code_object_files}
+
+# Link
+# ----
+: {code_object_files} |> ^o make library ‘$(LIBRARY)’^ $(LIBTOOL) $(LIBTOOL_FLAGS) %o %f |> lib$(LIBRARY).a
